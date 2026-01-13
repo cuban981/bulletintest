@@ -1,18 +1,17 @@
 name: Build and Deploy Bulletin
+
 on:
-  push:
-    paths:
-      - 'boletin.docx' # Trigger when doc changes
-      - 'template.html'
+  push:             # Runs on every push (removed specific file limits for now)
+  workflow_dispatch: # Adds a manual "Run" button for testing
 
 permissions:
-  contents: write
+  contents: write   # CRITICAL: Gives permission to create the gh-pages branch
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Setup Node
@@ -20,14 +19,14 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Install and Build
-        run: |
-          npm install
-          node build.js
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Build Script
+        run: node build.js
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: . # The folder the action should deploy.
-          clean: false
-          branch: gh-pages # The branch the action should deploy to.
+          folder: .
+          branch: gh-pages
